@@ -471,7 +471,7 @@
       </div>
       <div class="after">
         <a class="btn wa" id="waLink" href="#" target="_blank" rel="noopener">SEND MY RSVP ON WHATSAPP</a>
-        <p class="small" id="photoTip" hidden>Want your pic on the guest wall? Send it in the chat.</p>
+        <p class="small" id="photoTip" hidden>Want your pic on the guest wall? Send it to us there too.</p>
         <a class="btn cal" id="calLink" target="_blank" rel="noopener">ADD TO MY CALENDAR</a>
         <p class="small">Screenshot your pass for the door. Or don't, we'll recognise you.</p>
       </div>
@@ -704,6 +704,7 @@ form.addEventListener('submit',async e=>{e.preventDefault();
   try{await fetch(RSVP_FORM,{method:'POST',mode:'no-cors',body:fd});saved=true}catch(_){saved=false}
   sub.disabled=false;
   const base=WHATSAPP_NUMBER?`https://wa.me/${WHATSAPP_NUMBER}`:'https://wa.me/';
+  if(saved) text=`Hey Hajeela! It's ${name} 🔥\n`;
   document.getElementById('waLink').href=`${base}?text=${encodeURIComponent(text)}`;
 
   // Pass
@@ -720,7 +721,7 @@ form.addEventListener('submit',async e=>{e.preventDefault();
     ?(going?"You're on the list. See you at the fire 🔥":"Got it. We'll eat a marshmallow for you.")
     :(going?"Last thing: tap the WhatsApp button so your RSVP reaches us.":"Send us this on WhatsApp so we know. We'll eat a marshmallow for you.");
   document.getElementById('waLink').textContent=saved
-    ?(going?'SAY HI / SEND A PIC ON WHATSAPP':'SAY HI ON WHATSAPP')
+    ?'ASK US ON WHATSAPP'
     :(going?'SEND MY RSVP ON WHATSAPP':'SEND MY NOTE ON WHATSAPP');
   document.getElementById('waLink').classList.toggle('opt',saved);
   document.getElementById('calLink').style.display=going?'':'none';
