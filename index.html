@@ -91,7 +91,7 @@
   .reveal b{font-stretch:125%;font-weight:900;font-size:clamp(52px,16vw,96px);line-height:.9;color:var(--yellow);text-shadow:0 6px 0 rgba(0,0,0,.25)}
   .reveal span{font-stretch:125%;font-weight:900;font-size:clamp(26px,8vw,44px);color:#fff;margin-top:6px}
   @keyframes boom{0%{opacity:0;transform:scale(.92)}40%{opacity:1;transform:scale(1)}100%{opacity:1}}
-  .skip.show{opacity:.5;pointer-events:auto}
+  .skip.show{opacity:.7;pointer-events:auto}
   .skip{display:inline-block;margin-top:18px;background:none;border:0;color:var(--paper);opacity:0;pointer-events:none;transition:opacity .6s;font-size:13px;text-decoration:underline;cursor:pointer}
 
   /* ---------- INVITE ---------- */
@@ -263,6 +263,7 @@
   .after{margin-top:22px;display:flex;flex-direction:column;gap:14px;max-width:420px}
   .after a{text-decoration:none;text-align:center}
   .wa{background:var(--ink);color:#fff;box-shadow:0 0 0 4px var(--orange)}
+  .wa.opt{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink);font-size:14px}
   .cal{background:#fff;color:var(--ink);border:2px solid var(--ink)}
   .small{font-size:13px;color:var(--muted);font-weight:600;line-height:1.5}
 
@@ -470,7 +471,7 @@
       </div>
       <div class="after">
         <a class="btn wa" id="waLink" href="#" target="_blank" rel="noopener">SEND MY RSVP ON WHATSAPP</a>
-        <p class="small" id="photoTip" hidden>Send your photo in the chat too.</p>
+        <p class="small" id="photoTip" hidden>Want your pic on the guest wall? Send it in the chat.</p>
         <a class="btn cal" id="calLink" target="_blank" rel="noopener">ADD TO MY CALENDAR</a>
         <p class="small">Screenshot your pass for the door. Or don't, we'll recognise you.</p>
       </div>
@@ -488,6 +489,8 @@
 <script>
 /* ===== Settings Hania can change ===== */
 const WHATSAPP_NUMBER = "201277113337";            // e.g. "201001234567" (country code, no + or spaces). Empty = guest picks the chat.
+const RSVP_FORM = "https://docs.google.com/forms/d/e/1FAIpQLSfDe2ii0q3OYxFHN6h9-88uvSJUODzPF5wOo1hZVGRGGHW1tQ/formResponse";
+const F = {name:"entry.1776835930",status:"entry.1499791899",total:"entry.352546574",friends:"entry.433379327",good:"entry.1977491480",yes:"entry.1103283159",song:"entry.520396543",note:"entry.711635048"};
 const PARTY_START_UTC = "2026-12-04T12:00:00Z"; // Fri 4 Dec, 2 PM Cairo
 const PARTY_END_UTC   = "2026-12-04T16:00:00Z"; // 6 PM Cairo (protectorate reportedly closes ~6 PM)
 
@@ -538,7 +541,7 @@ hold.addEventListener('pointerdown',press);
 hold.addEventListener('keydown',e=>{if((e.key===' '||e.key==='Enter')&&!e.repeat)press(e)});
 hold.addEventListener('keyup',e=>{if(e.key===' '||e.key==='Enter')release()});
 hold.addEventListener('contextmenu',e=>e.preventDefault());
-setTimeout(()=>skipBtn.classList.add('show'),6000);
+skipBtn.classList.add('show');
 skipBtn.addEventListener('click',()=>{status.textContent="Fair enough.";opened||(opened=true,openInvite(300))});
 function openInvite(delay){hold.disabled=true;
   setTimeout(()=>{hookEl.style.display='none';const inv=document.getElementById('invite');inv.classList.add('show');window.scrollTo(0,0)},delay)}
@@ -672,7 +675,7 @@ let photoURL=null;
 document.getElementById('file').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;
   if(photoURL)URL.revokeObjectURL(photoURL);photoURL=URL.createObjectURL(f);const ph=document.getElementById('ph');ph.style.backgroundImage=`url(${photoURL})`;ph.textContent='';ph.style.borderStyle='solid'});
 
-form.addEventListener('submit',e=>{e.preventDefault();
+form.addEventListener('submit',async e=>{e.preventDefault();
   const name=document.getElementById('name').value.trim();const err=document.getElementById('err');
   if(!name){err.textContent="Just your name, please. Nicknames count.";document.getElementById('name').focus();return}err.textContent='';
   const fr=[...friends.querySelectorAll('input')].map(i=>i.value.trim());
@@ -691,6 +694,15 @@ form.addEventListener('submit',e=>{e.preventDefault();
   } else {
     text=`Hey Hajeela, it's ${name}. Can't make it on Fri 4 Dec, but so happy you're back!`+(msg?`\n\n${msg}`:'');
   }
+  // save to Google Sheet (silent)
+  const fd=new FormData();
+  fd.append(F.name,name);fd.append(F.status,going?'Coming':"Can't make it");fd.append(F.total,String(going?1+plus:0));
+  fd.append(F.friends,named.join(', '));fd.append(F.good,pw.join(', '));fd.append(F.yes,yesList.join(', '));
+  fd.append(F.song,song);fd.append(F.note,msg);
+  const sub=document.getElementById('submit');sub.disabled=true;sub.textContent='SAVING…';
+  let saved=false;
+  try{await fetch(RSVP_FORM,{method:'POST',mode:'no-cors',body:fd});saved=true}catch(_){saved=false}
+  sub.disabled=false;
   const base=WHATSAPP_NUMBER?`https://wa.me/${WHATSAPP_NUMBER}`:'https://wa.me/';
   document.getElementById('waLink').href=`${base}?text=${encodeURIComponent(text)}`;
 
@@ -704,10 +716,13 @@ form.addEventListener('submit',e=>{e.preventDefault();
   document.getElementById('pAdmit').textContent=going?1+plus:0;
   document.getElementById('photoTip').hidden=!(going&&photoURL);
   document.getElementById('doneTitle').textContent=going?"You're in!":"We'll miss you";
-  document.getElementById('doneSub').textContent=going
-    ?"Last thing: tap the WhatsApp button so your RSVP actually reaches us."
-    :"Send us this on WhatsApp so we know. We'll eat a marshmallow for you.";
-  document.getElementById('waLink').textContent=going?'SEND MY RSVP ON WHATSAPP':'SEND MY NOTE ON WHATSAPP';
+  document.getElementById('doneSub').textContent=saved
+    ?(going?"You're on the list. See you at the fire 🔥":"Got it. We'll eat a marshmallow for you.")
+    :(going?"Last thing: tap the WhatsApp button so your RSVP reaches us.":"Send us this on WhatsApp so we know. We'll eat a marshmallow for you.");
+  document.getElementById('waLink').textContent=saved
+    ?(going?'SAY HI / SEND A PIC ON WHATSAPP':'SAY HI ON WHATSAPP')
+    :(going?'SEND MY RSVP ON WHATSAPP':'SEND MY NOTE ON WHATSAPP');
+  document.getElementById('waLink').classList.toggle('opt',saved);
   document.getElementById('calLink').style.display=going?'':'none';
 
   form.classList.remove('show');document.getElementById('choice').style.display='none';quip.textContent='';
