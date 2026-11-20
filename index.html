@@ -262,9 +262,8 @@
     font-stretch:125%;font-weight:900;font-size:11px;text-align:center;transform:rotate(14deg);line-height:1.05;box-shadow:0 0 0 4px var(--paper)}
   .after{margin-top:22px;display:flex;flex-direction:column;gap:14px;max-width:420px}
   .after a{text-decoration:none;text-align:center}
-  .wa{background:var(--ink);color:#fff;box-shadow:0 0 0 4px var(--orange)}
-  .wa.opt{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink);font-size:14px}
-  .cal{background:#fff;color:var(--ink);border:2px solid var(--ink)}
+  .after .btn{font-size:15px;padding:16px 20px}
+  .wa,.wa.opt,.cal{background:var(--orange);color:#fff;box-shadow:0 0 0 4px #fff,0 7px 0 4px rgba(0,0,0,.18)}
   .small{font-size:13px;color:var(--muted);font-weight:600;line-height:1.5}
 
   footer{background:var(--ink);color:var(--paper);text-align:center;padding:40px 20px 50px}
@@ -378,7 +377,7 @@
         <div><small>TIME</small><strong>2 PM</strong></div>
         <div><small>WHERE</small><strong>WADI DEGLA</strong><span class="place">Protectorate, Maadi</span><a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Wadi+Degla+Protectorate+Maadi+Cairo" target="_blank" rel="noopener">Open in Maps ↗</a></div>
       </div>
-      <div class="stamp" aria-hidden="true">COME<br>BACK<br>PARTY</div>
+      <div class="stamp" aria-hidden="true">COME-<br>BACK<br>PARTY</div>
       <div class="count" aria-label="Countdown to the party">
         <div><b id="cd-d">–</b><span>DAYS</span></div>
         <div><b id="cd-h">–</b><span>HOURS</span></div>
@@ -459,7 +458,7 @@
 
     <section id="done" aria-live="polite">
       <h3 class="sec" id="doneTitle">You're in!</h3>
-      <p class="sub" id="doneSub">Last thing: tap the WhatsApp button so your RSVP actually reaches us.</p>
+      <p class="sub" id="doneSub">Last thing: tap the WhatsApp button so your RSVP reaches us.</p>
       <div class="pass" id="pass">
         <div class="seal">FOR<br>FUNZIES</div>
         <div class="row">
@@ -473,7 +472,7 @@
         <a class="btn wa" id="waLink" href="#" target="_blank" rel="noopener">SEND MY RSVP ON WHATSAPP</a>
         <p class="small" id="photoTip" hidden>Want your pic on the guest wall? Send it to us there too.</p>
         <a class="btn cal" id="calLink" target="_blank" rel="noopener">ADD TO MY CALENDAR</a>
-        <p class="small">Screenshot your pass for the door. Or don't, we'll recognise you.</p>
+        <p class="small">You don't need your pass at the door. You're most welcome 🧡</p>
       </div>
     </section>
   </div>
@@ -569,8 +568,8 @@ const ic={
 /* ===== What's on: swipe deck ===== */
 const qs=[
  ['GOOD MUSIC',ic.music,"Requests welcome. Bad dancing encouraged.","We'll play it anyway."],
- ['NICE GAMES',ic.games,"Winner gets bragging rights. Loser gets pizza.","You'll get dragged in. Sorry."],
- ['PIZZA',ic.pizza,"We did the maths. Twice.","Who hurt you?"],
+ ['NICE GAMES',ic.games,"Winner gets bragging rights. Loser gets pizza.","No pressure. Cheering counts too."],
+ ['PIZZA',ic.pizza,"We did the maths. Twice.","Noted. More slices for us."],
  ['A BONFIRE',ic.fire,"Someone will bring a guitar. We can't stop them.","It's December. You'll want it."],
  ['MARSH­MALLOWS',ic.mallow,"You already practised. Now show off.","More for us."],
  ['FUN TIMES',ic.star,"Good. That's the whole point.","Wrong answer. Try again 👀"]
@@ -582,7 +581,7 @@ function renderDeck(){deckEl.innerHTML='';
   if(qi>=qs.length){dBtns.style.visibility='hidden';
     const n=yesList.length,all=n===qs.length;
     const end=document.createElement('div');end.className='deck-end';
-    end.innerHTML=`<b>${n}/${qs.length}</b><p>${all?"Perfect score. You're basically already there.":n>=4?"Solid. We'll work on the rest at the party.":"Interesting choices. Come anyway."}</p><div class="acts"><a class="go" href="#rsvp">RSVP NOW ↓</a><button type="button" class="again">AGAIN</button></div>`;
+    end.innerHTML=`<b>${n}/${qs.length}</b><p>${all?"Perfect score. You're basically already there.":n>=4?"Solid. We'll work on the rest at the party.":"Noted. Come for the company."}</p><div class="acts"><a class="go" href="#rsvp">RSVP NOW ↓</a><button type="button" class="again">AGAIN</button></div>`;
     end.querySelector('.again').onclick=()=>{qi=0;yesList=[];reply.textContent='';dBtns.style.visibility='';renderDeck()};
     end.querySelector('.go').onclick=e=>{e.preventDefault();document.getElementById('rsvp').scrollIntoView({behavior:'smooth'})};
     deckEl.appendChild(end);return}
@@ -621,7 +620,7 @@ const stickers=[
  ['s-kraft',-9,'Marshmallows',`<div>${ic.mallow}<div class="lbl" style="font-size:3cqw">MARSHMALLOWS</div></div>`],
  ['s-pin',7,'Good music',`<svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><defs><path id="pinp" d="M50,50 m-33,0 a33,33 0 1,1 66,0 a33,33 0 1,1 -66,0"/></defs><text style="font-family:Archivo,sans-serif;font-stretch:125%" font-size="10" font-weight="900" fill="#2F2A24"><textPath href="#pinp" textLength="203" lengthAdjust="spacing">GOOD MUSIC • GOOD MUSIC • </textPath></text></svg>${ic.music.replace('<svg','<svg class="g"')}`],
  ['s-scal',-7,'We miss you',`<svg class="shape" viewBox="0 0 100 100" aria-hidden="true"><path d="${scal}" fill="#FBF8F2" stroke="#fff" stroke-width="5"/></svg><div class="in">${ic.heart.replace('<svg','<svg class="g"')}<div class="lbl">WE MISS<br>YOU</div></div>`],
- ['s-patch',4,'Hajeela is finally back','<div class="lbl">FINALLY<br>BACK</div><small>WADI DEGLA · 04.12</small>'],
+ ['s-patch',4,'See you there','<div class="lbl">SEE YOU<br>THERE</div><small>WADI DEGLA · 04.12</small>'],
  ['s-note',-12,'For funzies','<div class="lbl">FOR<br>FUNZIES</div>']
 ];
 const col=document.getElementById('collage');
@@ -656,7 +655,7 @@ const form=document.getElementById('form');let going=true;
 function openForm(isGoing){going=isGoing;form.classList.add('show');
   document.getElementById('goingBits').hidden=!isGoing;document.getElementById('regretBits').hidden=isGoing;
   document.getElementById('submit').textContent=isGoing?'COUNT ME IN':'SEND MY REGRETS';
-  quip.textContent=isGoing?"Yay! Fill this in.":"Aw. At least tell us who you are.";
+  quip.textContent=isGoing?"Yay! Fill this in.":"Aw, we'll miss you.";
   setTimeout(()=>document.getElementById('name').focus({preventScroll:true}),50);form.scrollIntoView({behavior:'smooth',block:'start'})}
 
 let plus=0;const out=document.getElementById('plus'),friends=document.getElementById('friends'),note=document.getElementById('plusNote');
